@@ -14,6 +14,7 @@
     src: "{{ workspace }}/xdebug-{{ php_xdebug_version }}.tgz"
     dest: "{{ workspace }}"
     copy: no
+  register: php_xdebug_untar
 
 - name: Build Xdebug.
   shell: >
@@ -33,6 +34,12 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Ensure old version was removed.
+  shell: >
+    rm {{ php_xdebug_module_path }}/xdebug.so
+    removes={{ php_xdebug_module_path }}/xdebug.so
+  when: php_xdebug_untar.changed
 
 - name: Move Xdebug module into place.
   shell: >
